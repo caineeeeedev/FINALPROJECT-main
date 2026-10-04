@@ -10,49 +10,60 @@ public class QuizEngine {
     Scanner scanner;
 
     public QuizEngine(ArrayList<Question> list, Scanner sc) {
-    questions = list;
-    scanner = sc;
-    score = 0;
-}
+        questions = list;
+        scanner = sc;
+        score = 0;
+    }
 
     public int run() {
 
-    Collections.shuffle(questions);
+        Collections.shuffle(questions);
 
-    for (int i = 0; i < questions.size(); i++) {
-        Question q = questions.get(i);
+        int number = 1;
 
-        System.out.println("\nQuestion " + (i + 1) + " of " + questions.size());
-        q.display();
+        for (Question q : questions) {
 
-        char answer = getValidatedAnswer();
+            System.out.println("\nQuestion " + number + " of " + questions.size());
+            System.out.println(q.questionText);
+            System.out.println("   A) " + q.options[0]);
+            System.out.println("   B) " + q.options[1]);
+            System.out.println("   C) " + q.options[2]);
+            System.out.println("   D) " + q.options[3]);
 
-        if (q.isCorrect(answer)) {
-            System.out.println("Correct!");
-            score++;
-        } else {
-            System.out.println("Incorrect. The correct answer was " + q.getCorrectAnswer() + ".");
+            char answer = getValidatedAnswer();
+
+            if (q.isCorrect(answer)) {
+                System.out.println("Correct!");
+                score++;
+            } else {
+                System.out.println("Incorrect. The correct answer was " + q.correctAnswer + ".");
+            }
+
+            number++;
         }
+
+        return score;
     }
 
-    return score;
-}
+    private char getValidatedAnswer() {
+        while (true) {
+            System.out.print("Your answer (A/B/C/D): ");
+            String input = scanner.nextLine();
 
-   private char getValidatedAnswer() {
-    while (true) {
-        System.out.print("Your answer (A/B/C/D): ");
-        String input = scanner.nextLine().trim().toUpperCase();
-
-        try {
-            if (!input.equals("A") && !input.equals("B") && !input.equals("C") && !input.equals("D")) {
-                throw new InvalidAnswerException("Invalid answer.");
+            if (input.equalsIgnoreCase("A")) {
+                return 'A';
             }
-            return input.charAt(0);
+            if (input.equalsIgnoreCase("B")) {
+                return 'B';
+            }
+            if (input.equalsIgnoreCase("C")) {
+                return 'C';
+            }
+            if (input.equalsIgnoreCase("D")) {
+                return 'D';
+            }
 
-        } 
-        catch (InvalidAnswerException e) {
-            System.out.println(e.getMessage() + " Please enter A, B, C, or D.");
+            System.out.println("Invalid answer. Please enter A, B, C, or D.");
         }
-     }
     }
 }
