@@ -8,8 +8,8 @@ import java.util.Scanner;
 // six seven
 public class Main {
 
-    static final String QUESTIONS_FILE = "data/questions.txt";
-    static final String RESULTS_FILE = "data/results.txt";
+   static final String QUESTIONS_FILE = "data/questions.txt";
+   static final String RESULTS_FILE = "data/results.txt";
 
     public static void main(String[] args) {
 

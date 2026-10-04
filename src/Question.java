@@ -1,6 +1,6 @@
 public class Question {
     String questionText;
-    String[] options;
+    String options[];
     char correctAnswer;
 
     public Question(String questionText, String[] options, char correctAnswer) {
