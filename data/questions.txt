@@ -1,0 +1,8 @@
+What is the capital of France?|Paris|London|Berlin|Madrid|A
+Which keyword is used to handle exceptions in Java?|loop|catch|switch|import|B
+Which data structure allows dynamic resizing in Java?|Array|ArrayList|Integer|String|B
+What does JVM stand for?|Java Verified Machine|Java Virtual Machine|Java Variable Method|Joint Virtual Machine|B
+Which class is used to read text from a file in Java?|Scanner|FileWriter|BufferedReader|All of the above|D
+What is the default value of a boolean in Java?|true|false|null|0|B
+Which method starts a Java program's execution?|start()|main()|run()|init()|B
+SDF|SDF|SDF|SDF|SDF|A
