@@ -5,83 +5,65 @@ import java.util.Scanner;
 public class Main {
     static final String QUESTIONS_FILE = "data/questions.txt";
     static final String RESULTS_FILE = "data/results.txt";
+    static final int UI_WIDTH = 54;
 
     public static void main(String[] args) {
-        if (!LoginSystemLogin.showLogin()) {
-            return;
-        }
+        if (!LoginSystemLogin.showLogin()) return;
 
         Scanner scanner = LoginSystemLogin.scanner;
-        QuizFileHandler fileHandler =
-                new QuizFileHandler(QUESTIONS_FILE, RESULTS_FILE);
+        QuizFileHandler fileHandler = new QuizFileHandler(QUESTIONS_FILE, RESULTS_FILE);
 
         clearScreen();
         Logo.print();
         waitForEnter(scanner);
 
         boolean running = true;
-
         while (running) {
             clearScreen();
-
-            System.out.println("==============================");
-            System.out.println("          QUITIQUIZ");
-            System.out.println("          MAIN MENU");
-            System.out.println("==============================");
-            System.out.println("[1] Add a new question");
-            System.out.println("[2] Take the quiz");
-            System.out.println("[3] Exit");
-            System.out.print("Choose an option (1-3): ");
+            printHeader("QUITIQUIZ", "MAIN MENU");
+            printOption("1", "Add a new question");
+            printOption("2", "Take the quiz");
+            printOption("3", "Exit");
+            printFooter();
+            System.out.print("  Choose an option (1-3): ");
 
             String choice = scanner.nextLine().trim();
-
             switch (choice) {
                 case "1":
                     clearScreen();
                     addNewQuestion(fileHandler, scanner);
                     pause(scanner);
                     break;
-
                 case "2":
                     clearScreen();
                     takeQuiz(fileHandler, scanner);
                     pause(scanner);
                     break;
-
                 case "3":
                     clearScreen();
-                    System.out.println("THANK YOU FOR USING QUITIQUIZ");
+                    printHeader("QUITIQUIZ", "GOODBYE!");
+                    System.out.println("  Thank you for using QuitiQuiz.");
+                    printFooter();
                     running = false;
                     break;
-
                 default:
-                    System.out.println(
-                            "Invalid choice. Please enter 1, 2, or 3."
-                    );
+                    printNotice("Invalid choice. Please enter 1, 2, or 3.");
                     pause(scanner);
             }
         }
     }
 
-    static void takeQuiz(
-            QuizFileHandler fileHandler,
-            Scanner scanner
-    ) {
+    static void takeQuiz(QuizFileHandler fileHandler, Scanner scanner) {
         ArrayList<Question> questions;
-
         try {
             questions = fileHandler.loadQuestions();
         } catch (IOException e) {
-            System.out.println(
-                    "Could not read the questions file."
-            );
+            printNotice("Could not read the questions file.");
             return;
         }
 
         if (questions.isEmpty()) {
-            System.out.println(
-                    "There are currently no questions."
-            );
+            printNotice("There are currently no questions.");
             return;
         }
 
@@ -90,148 +72,107 @@ public class Main {
         String username = LoginSystemLogin.loggedInUsername;
 
         clearScreen();
-
-        System.out.println("==============================");
-        System.out.println("        QUIZ COMPLETE");
-        System.out.println("==============================");
-        System.out.println(
-                username + ", your final score is "
-                        + score + " out of " + questions.size()
-        );
+        printHeader("QUIZ COMPLETE", "FINAL RESULT");
+        System.out.println("  Player : " + username);
+        System.out.println("  Score  : " + score + " / " + questions.size());
+        printFooter();
 
         try {
-            fileHandler.saveResult(
-                    username,
-                    score,
-                    questions.size()
-            );
-
-            System.out.println(
-                    "Your result was saved successfully."
-            );
+            fileHandler.saveResult(username, score, questions.size());
+            printNotice("Your result was saved successfully.");
         } catch (IOException e) {
-            System.out.println(
-                    "Your result could not be saved."
-            );
+            printNotice("Your result could not be saved.");
         }
     }
 
-    static void addNewQuestion(
-            QuizFileHandler fileHandler,
-            Scanner scanner
-    ) {
-        System.out.println("==============================");
-        System.out.println("      ADD A NEW QUESTION");
-        System.out.println("==============================");
-
-        String question =
-                readText(scanner, "Question: ");
-
-        String optionA =
-                readText(scanner, "Option A: ");
-
-        String optionB =
-                readText(scanner, "Option B: ");
-
-        String optionC =
-                readText(scanner, "Option C: ");
-
-        String optionD =
-                readText(scanner, "Option D: ");
-
+    static void addNewQuestion(QuizFileHandler fileHandler, Scanner scanner) {
+        printHeader("QUITIQUIZ", "ADD A NEW QUESTION");
+        String question = readText(scanner, "Question: ");
+        String optionA = readText(scanner, "Option A: ");
+        String optionB = readText(scanner, "Option B: ");
+        String optionC = readText(scanner, "Option C: ");
+        String optionD = readText(scanner, "Option D: ");
         char correctAnswer;
 
         while (true) {
-            System.out.print(
-                    "Correct answer (A/B/C/D): "
-            );
-
-            String input =
-                    scanner.nextLine().trim().toUpperCase();
-
-            if (input.length() == 1
-                    && input.charAt(0) >= 'A'
-                    && input.charAt(0) <= 'D') {
-
+            System.out.print("  Correct answer (A/B/C/D): ");
+            String input = scanner.nextLine().trim().toUpperCase();
+            if (input.length() == 1 && input.charAt(0) >= 'A' && input.charAt(0) <= 'D') {
                 correctAnswer = input.charAt(0);
                 break;
             }
-
-            System.out.println(
-                    "Please enter only A, B, C, or D."
-            );
+            printNotice("Please enter only A, B, C, or D.");
         }
 
-        String[] options = {
-                optionA,
-                optionB,
-                optionC,
-                optionD
-        };
-
-        Question newQuestion =
-                new Question(
-                        question,
-                        options,
-                        correctAnswer
-                );
-
+        String[] options = {optionA, optionB, optionC, optionD};
+        Question newQuestion = new Question(question, options, correctAnswer);
         try {
             fileHandler.addQuestion(newQuestion);
-
-            System.out.println(
-                    "Question added successfully!"
-            );
+            printNotice("Question added successfully!");
         } catch (IOException e) {
-            System.out.println(
-                    "The question could not be saved."
-            );
+            printNotice("The question could not be saved.");
         }
     }
 
-    static String readText(
-            Scanner scanner,
-            String prompt
-    ) {
+    static String readText(Scanner scanner, String prompt) {
         while (true) {
-            System.out.print(prompt);
-
-            String input =
-                    scanner.nextLine().trim();
-
-            if (input.isEmpty()) {
-                System.out.println(
-                        "This field cannot be empty."
-                );
-            } else if (input.contains("|")) {
-                System.out.println(
-                        "The | character is not allowed."
-                );
-            } else {
-                return input;
-            }
+            System.out.print("  " + prompt);
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty()) printNotice("This field cannot be empty.");
+            else if (input.contains("|")) printNotice("The | character is not allowed.");
+            else return input;
         }
     }
 
     static void waitForEnter(Scanner scanner) {
-        System.out.print(
-                "\nPress ENTER to continue..."
-        );
-
+        System.out.print("\n  Press ENTER to continue...");
         scanner.nextLine();
     }
 
     static void pause(Scanner scanner) {
-        System.out.print(
-                "\nPress ENTER to return to the menu..."
-        );
-
+        System.out.print("\n  Press ENTER to return to the menu...");
         scanner.nextLine();
     }
 
     static void clearScreen() {
-        for (int i = 0; i < 30; i++) {
-            System.out.println();
-        }
+        for (int i = 0; i < 25; i++) System.out.println();
+    }
+
+    static void printHeader(String title, String subtitle) {
+        printBorder();
+        printCentered(title);
+        printCentered(subtitle);
+        printBorder();
+        System.out.println();
+    }
+
+    static void printOption(String number, String text) {
+        System.out.println("       [" + number + "]  " + text);
+    }
+
+    static void printNotice(String text) {
+        System.out.println();
+        System.out.println("  >> " + text);
+    }
+
+    static void printFooter() {
+        System.out.println();
+        printBorder();
+    }
+
+    static void printBorder() {
+        System.out.print("+");
+        for (int i = 0; i < UI_WIDTH; i++) System.out.print("-");
+        System.out.println("+");
+    }
+
+    static void printCentered(String text) {
+        int left = (UI_WIDTH - text.length()) / 2;
+        int right = UI_WIDTH - text.length() - left;
+        System.out.print("|");
+        for (int i = 0; i < left; i++) System.out.print(" ");
+        System.out.print(text);
+        for (int i = 0; i < right; i++) System.out.print(" ");
+        System.out.println("|");
     }
 }

@@ -18,10 +18,11 @@ public class Question {
     }
 
     public void display() {
-        System.out.println(questionText);
-        System.out.println("   A) " + options[0]);
-        System.out.println("   B) " + options[1]);
-        System.out.println("   C) " + options[2]);
-        System.out.println("   D) " + options[3]);
+        System.out.println("  " + questionText);
+        System.out.println();
+        System.out.println("       [A] " + options[0]);
+        System.out.println("       [B] " + options[1]);
+        System.out.println("       [C] " + options[2]);
+        System.out.println("       [D] " + options[3]);
     }
 }
