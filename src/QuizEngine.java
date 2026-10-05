@@ -8,7 +8,10 @@ public class QuizEngine {
     int score;
     Scanner scanner;
 
-    public QuizEngine(ArrayList<Question> list, Scanner sc) {
+    public QuizEngine(
+            ArrayList<Question> list,
+            Scanner sc
+    ) {
         questions = list;
         scanner = sc;
         score = 0;
@@ -23,19 +26,21 @@ public class QuizEngine {
             Main.clearScreen();
             Main.printTop();
             Main.printCentered(
-                    "QUESTION " + (i + 1) + " OF " + questions.size()
+                    "QUESTION "
+                            + (i + 1)
+                            + " OF "
+                            + questions.size()
             );
             Main.printCentered("Score: " + score);
             Main.printBottom();
-
-            System.out.println();
-            System.out.println(question.questionText);
-            System.out.println();
-            System.out.println("  A. " + question.options[0]);
-            System.out.println("  B. " + question.options[1]);
-            System.out.println("  C. " + question.options[2]);
-            System.out.println("  D. " + question.options[3]);
-            System.out.println();
+            Main.printText("");
+            Main.printText(question.questionText);
+            Main.printText("");
+            Main.printText("A. " + question.options[0]);
+            Main.printText("B. " + question.options[1]);
+            Main.printText("C. " + question.options[2]);
+            Main.printText("D. " + question.options[3]);
+            Main.printText("");
 
             char answer = getValidatedAnswer();
 
@@ -50,7 +55,10 @@ public class QuizEngine {
             }
 
             if (i < questions.size() - 1) {
-                System.out.print("\nPress ENTER for the next question...");
+                Main.printText("");
+                Main.printPrompt(
+                        "Press ENTER for the next question..."
+                );
                 scanner.nextLine();
             }
         }
@@ -60,14 +68,18 @@ public class QuizEngine {
 
     private char getValidatedAnswer() {
         while (true) {
-            System.out.print("Your answer (A/B/C/D): ");
-            String input = scanner.nextLine().trim().toUpperCase();
+            Main.printPrompt("Your answer (A/B/C/D): ");
+
+            String input =
+                    scanner.nextLine().trim().toUpperCase();
 
             if (input.matches("[ABCD]")) {
                 return input.charAt(0);
             }
 
-            System.out.println("Please enter only A, B, C, or D.");
+            Main.printText(
+                    "Please enter only A, B, C, or D."
+            );
         }
     }
 }

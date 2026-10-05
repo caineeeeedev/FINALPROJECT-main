@@ -51,7 +51,7 @@ public class LoginSystemLogin {
             Main.printLine("  [3] Exit");
             Main.printLine("");
             Main.printBottom();
-            System.out.print("Choose an option (1-3): ");
+            Main.printPrompt("Choose an option (1-3): ");
 
             String choice = scanner.nextLine().trim();
 
@@ -68,7 +68,9 @@ public class LoginSystemLogin {
 
                 case "3":
                     Main.clearScreen();
-                    Main.printBox("THANK YOU FOR USING QUITIQUIZ");
+                    Main.printBox(
+                            "THANK YOU FOR USING QUITIQUIZ"
+                    );
                     return false;
 
                 default:
@@ -83,8 +85,12 @@ public class LoginSystemLogin {
     static boolean login() {
         Main.clearScreen();
         Main.printBox("LOG IN");
-        System.out.println("Enter 0 to return to the account menu.\n");
-        System.out.print("ID number (2026-xxxxxxx): ");
+        Main.printText("");
+        Main.printText(
+                "Enter 0 to return to the account menu."
+        );
+        Main.printText("");
+        Main.printPrompt("ID number (2026-xxxxxxx): ");
 
         String id = scanner.nextLine().trim();
 
@@ -93,12 +99,14 @@ public class LoginSystemLogin {
         }
 
         if (!id.matches("2026-\\d{7}")) {
-            Main.showMessage("Invalid ID format: 2026-xxxxxxx");
+            Main.showMessage(
+                    "Invalid ID format: 2026-xxxxxxx"
+            );
             Main.waitForEnter(scanner);
             return false;
         }
 
-        System.out.print("Password: ");
+        Main.printPrompt("Password: ");
         String password = scanner.nextLine();
 
         String[] account = findAccount(id);
@@ -111,7 +119,9 @@ public class LoginSystemLogin {
             Main.printTop();
             Main.printCentered("LOGIN SUCCESSFUL");
             Main.printMiddle();
-            Main.printCentered("Welcome, " + loggedInUsername + "!");
+            Main.printCentered(
+                    "Welcome, " + loggedInUsername + "!"
+            );
             Main.printCentered("ID: " + loggedInID);
             Main.printBottom();
             Main.waitForEnter(scanner);
@@ -126,8 +136,12 @@ public class LoginSystemLogin {
     static void signUp() {
         Main.clearScreen();
         Main.printBox("CREATE AN ACCOUNT");
-        System.out.println("Enter 0 to return to the account menu.\n");
-        System.out.print("ID number (2026-xxxxxxx): ");
+        Main.printText("");
+        Main.printText(
+                "Enter 0 to return to the account menu."
+        );
+        Main.printText("");
+        Main.printPrompt("ID number (2026-xxxxxxx): ");
 
         String id = scanner.nextLine().trim();
 
@@ -136,21 +150,25 @@ public class LoginSystemLogin {
         }
 
         if (!id.matches("2026-\\d{7}")) {
-            Main.showMessage("Invalid ID format: 2026-xxxxxxx");
+            Main.showMessage(
+                    "Invalid ID format: 2026-xxxxxxx"
+            );
             Main.waitForEnter(scanner);
             return;
         }
 
         if (findAccount(id) != null) {
-            Main.showMessage("That ID number is already registered.");
+            Main.showMessage(
+                    "That ID number is already registered."
+            );
             Main.waitForEnter(scanner);
             return;
         }
 
-        System.out.print("Username: ");
+        Main.printPrompt("Username: ");
         String username = scanner.nextLine().trim();
 
-        System.out.print("Password: ");
+        Main.printPrompt("Password: ");
         String password = scanner.nextLine();
 
         if (username.isEmpty() || password.isEmpty()) {
@@ -172,9 +190,15 @@ public class LoginSystemLogin {
                 file.getParentFile().mkdirs();
             }
 
-            try (FileWriter writer = new FileWriter(file, true)) {
+            try (FileWriter writer =
+                         new FileWriter(file, true)) {
                 writer.write(
-                        id + "|" + username + "|" + password + "\n"
+                        id
+                                + "|"
+                                + username
+                                + "|"
+                                + password
+                                + "\n"
                 );
             }
 
@@ -185,8 +209,11 @@ public class LoginSystemLogin {
             Main.printCentered("Username: " + username);
             Main.printCentered("ID: " + id);
             Main.printBottom();
+
         } catch (IOException e) {
-            Main.showMessage("The account could not be saved.");
+            Main.showMessage(
+                    "The account could not be saved."
+            );
         }
 
         Main.waitForEnter(scanner);

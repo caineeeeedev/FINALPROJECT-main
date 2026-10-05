@@ -8,6 +8,7 @@ public class Main {
     static final String QUESTIONS_FILE = "data/questions.txt";
     static final String RESULTS_FILE = "data/results.txt";
     static final int WIDTH = 62;
+    static final int CONSOLE_WIDTH = 120;
 
     public static void main(String[] args) {
         if (!LoginSystemLogin.showLogin()) {
@@ -15,7 +16,8 @@ public class Main {
         }
 
         Scanner scanner = LoginSystemLogin.scanner;
-        QuizFileHandler fileHandler = new QuizFileHandler(QUESTIONS_FILE, RESULTS_FILE);
+        QuizFileHandler fileHandler =
+                new QuizFileHandler(QUESTIONS_FILE, RESULTS_FILE);
 
         clearScreen();
         Logo.print();
@@ -45,7 +47,6 @@ public class Main {
                 case "3":
                     clearScreen();
                     printBox("THANK YOU FOR USING QUITIQUIZ");
-                    System.out.println();
                     running = false;
                     break;
 
@@ -67,10 +68,13 @@ public class Main {
         printLine("  [3] Exit");
         printLine("");
         printBottom();
-        System.out.print("Choose an option (1-3): ");
+        printPrompt("Choose an option (1-3): ");
     }
 
-    static void takeQuiz(QuizFileHandler fileHandler, Scanner scanner) {
+    static void takeQuiz(
+            QuizFileHandler fileHandler,
+            Scanner scanner
+    ) {
         ArrayList<Question> questions;
 
         try {
@@ -101,37 +105,59 @@ public class Main {
         printBottom();
 
         try {
-            fileHandler.saveResult(playerName, finalScore, questions.size());
-            System.out.println("\nYour result was saved successfully.");
+            fileHandler.saveResult(
+                    playerName,
+                    finalScore,
+                    questions.size()
+            );
+            printText("");
+            printText("Your result was saved successfully.");
         } catch (IOException e) {
-            System.out.println("\nWarning: Your result could not be saved.");
+            printText("");
+            printText("Warning: Your result could not be saved.");
         }
     }
 
-    static void addNewQuestion(QuizFileHandler fileHandler, Scanner scanner) {
+    static void addNewQuestion(
+            QuizFileHandler fileHandler,
+            Scanner scanner
+    ) {
         printBox("ADD A NEW QUESTION");
+        printText("");
 
-        String questionText = readNonEmptyLine(scanner, "Question: ");
-        String optionA = readNonEmptyLine(scanner, "Option A: ");
-        String optionB = readNonEmptyLine(scanner, "Option B: ");
-        String optionC = readNonEmptyLine(scanner, "Option C: ");
-        String optionD = readNonEmptyLine(scanner, "Option D: ");
+        String questionText =
+                readNonEmptyLine(scanner, "Question: ");
+        String optionA =
+                readNonEmptyLine(scanner, "Option A: ");
+        String optionB =
+                readNonEmptyLine(scanner, "Option B: ");
+        String optionC =
+                readNonEmptyLine(scanner, "Option C: ");
+        String optionD =
+                readNonEmptyLine(scanner, "Option D: ");
 
         char correctAnswer;
 
         while (true) {
-            System.out.print("Correct answer (A/B/C/D): ");
-            String input = scanner.nextLine().trim().toUpperCase();
+            printPrompt("Correct answer (A/B/C/D): ");
+            String input =
+                    scanner.nextLine().trim().toUpperCase();
 
             if (input.matches("[ABCD]")) {
                 correctAnswer = input.charAt(0);
                 break;
             }
 
-            System.out.println("Please enter only A, B, C, or D.");
+            printText("Please enter only A, B, C, or D.");
         }
 
-        String[] options = {optionA, optionB, optionC, optionD};
+        String[] options = {
+                optionA,
+                optionB,
+                optionC,
+                optionD
+        };
+
         Question newQuestion =
                 new Question(questionText, options, correctAnswer);
 
@@ -148,13 +174,13 @@ public class Main {
             String prompt
     ) {
         while (true) {
-            System.out.print(prompt);
+            printPrompt(prompt);
             String input = scanner.nextLine().trim();
 
             if (input.isEmpty()) {
-                System.out.println("This field cannot be empty.");
+                printText("This field cannot be empty.");
             } else if (input.contains("|")) {
-                System.out.println("The | character is not allowed.");
+                printText("The | character is not allowed.");
             } else {
                 return input;
             }
@@ -162,12 +188,14 @@ public class Main {
     }
 
     static void waitForEnter(Scanner scanner) {
-        System.out.print("\nPress ENTER to continue...");
+        printText("");
+        printPrompt("Press ENTER to continue...");
         scanner.nextLine();
     }
 
     static void pause(Scanner scanner) {
-        System.out.print("\nPress ENTER to return to the menu...");
+        printText("");
+        printPrompt("Press ENTER to return to the menu...");
         scanner.nextLine();
     }
 
@@ -178,8 +206,14 @@ public class Main {
     }
 
     static void showMessage(String message) {
-        System.out.println();
+        printText("");
         printBox(message);
+    }
+
+    static String margin() {
+        int spaces =
+                Math.max(0, (CONSOLE_WIDTH - WIDTH - 2) / 2);
+        return " ".repeat(spaces);
     }
 
     static void printBox(String text) {
@@ -189,15 +223,21 @@ public class Main {
     }
 
     static void printTop() {
-        System.out.println("+" + "-".repeat(WIDTH) + "+");
+        System.out.println(
+                margin() + "+" + "-".repeat(WIDTH) + "+"
+        );
     }
 
     static void printMiddle() {
-        System.out.println("+" + "-".repeat(WIDTH) + "+");
+        System.out.println(
+                margin() + "+" + "-".repeat(WIDTH) + "+"
+        );
     }
 
     static void printBottom() {
-        System.out.println("+" + "-".repeat(WIDTH) + "+");
+        System.out.println(
+                margin() + "+" + "-".repeat(WIDTH) + "+"
+        );
     }
 
     static void printLine(String text) {
@@ -207,7 +247,10 @@ public class Main {
             shortened = shortened.substring(0, WIDTH);
         }
 
-        System.out.printf("|%-" + WIDTH + "s|%n", shortened);
+        System.out.printf(
+                margin() + "|%-" + WIDTH + "s|%n",
+                shortened
+        );
     }
 
     static void printCentered(String text) {
@@ -217,16 +260,26 @@ public class Main {
             shortened = shortened.substring(0, WIDTH);
         }
 
-        int leftPadding = (WIDTH - shortened.length()) / 2;
+        int leftPadding =
+                (WIDTH - shortened.length()) / 2;
         int rightPadding =
                 WIDTH - shortened.length() - leftPadding;
 
         System.out.println(
-                "|" +
-                " ".repeat(leftPadding) +
-                shortened +
-                " ".repeat(rightPadding) +
-                "|"
+                margin()
+                        + "|"
+                        + " ".repeat(leftPadding)
+                        + shortened
+                        + " ".repeat(rightPadding)
+                        + "|"
         );
+    }
+
+    static void printPrompt(String text) {
+        System.out.print(margin() + text);
+    }
+
+    static void printText(String text) {
+        System.out.println(margin() + text);
     }
 }
