@@ -1,5 +1,6 @@
 @echo off
 title QuitiQuiz
+color 0A
 cd /d "%~dp0"
 
 if not exist out mkdir out
