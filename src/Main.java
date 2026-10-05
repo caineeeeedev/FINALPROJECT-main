@@ -1,4 +1,3 @@
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -7,7 +6,7 @@ public class Main {
 
     static final String QUESTIONS_FILE = "data/questions.txt";
     static final String RESULTS_FILE = "data/results.txt";
-    static final int WIDTH = 62;
+    static final int BOX_WIDTH = 62;
     static final int CONSOLE_WIDTH = 120;
 
     public static void main(String[] args) {
@@ -29,9 +28,9 @@ public class Main {
             clearScreen();
             showMainMenu();
 
-            String menuChoice = scanner.nextLine().trim();
+            String choice = scanner.nextLine().trim();
 
-            switch (menuChoice) {
+            switch (choice) {
                 case "1":
                     clearScreen();
                     addNewQuestion(fileHandler, scanner);
@@ -51,23 +50,25 @@ public class Main {
                     break;
 
                 default:
-                    showMessage("Invalid choice. Please enter 1, 2, or 3.");
+                    printMessage(
+                            "Invalid choice. Please enter 1, 2, or 3."
+                    );
                     pause(scanner);
             }
         }
     }
 
     static void showMainMenu() {
-        printTop();
+        printBorder();
         printCentered("QUITIQUIZ");
         printCentered("MAIN MENU");
-        printMiddle();
+        printBorder();
         printLine("");
         printLine("  [1] Add a new question");
         printLine("  [2] Take the quiz");
         printLine("  [3] Exit");
         printLine("");
-        printBottom();
+        printBorder();
         printPrompt("Choose an option (1-3): ");
     }
 
@@ -79,42 +80,39 @@ public class Main {
 
         try {
             questions = fileHandler.loadQuestions();
-        } catch (FileNotFoundException e) {
-            showMessage("Questions file could not be found.");
-            return;
         } catch (IOException e) {
-            showMessage("Could not read the questions file.");
+            printMessage("Could not read the questions file.");
             return;
         }
 
         if (questions.isEmpty()) {
-            showMessage("There are currently no quiz questions.");
+            printMessage("There are currently no questions.");
             return;
         }
 
-        QuizEngine engine = new QuizEngine(questions, scanner);
-        int finalScore = engine.run();
-        String playerName = LoginSystemLogin.loggedInUsername;
+        QuizEngine quiz = new QuizEngine(questions, scanner);
+        int score = quiz.run();
+        String username = LoginSystemLogin.loggedInUsername;
 
         clearScreen();
-        printTop();
+        printBorder();
         printCentered("QUIZ COMPLETE");
-        printMiddle();
-        printCentered(playerName + ", your final score is");
-        printCentered(finalScore + " out of " + questions.size());
-        printBottom();
+        printBorder();
+        printCentered(username + ", your final score is");
+        printCentered(score + " out of " + questions.size());
+        printBorder();
 
         try {
             fileHandler.saveResult(
-                    playerName,
-                    finalScore,
+                    username,
+                    score,
                     questions.size()
             );
             printText("");
             printText("Your result was saved successfully.");
         } catch (IOException e) {
             printText("");
-            printText("Warning: Your result could not be saved.");
+            printText("Your result could not be saved.");
         }
     }
 
@@ -125,16 +123,16 @@ public class Main {
         printBox("ADD A NEW QUESTION");
         printText("");
 
-        String questionText =
-                readNonEmptyLine(scanner, "Question: ");
+        String question =
+                readText(scanner, "Question: ");
         String optionA =
-                readNonEmptyLine(scanner, "Option A: ");
+                readText(scanner, "Option A: ");
         String optionB =
-                readNonEmptyLine(scanner, "Option B: ");
+                readText(scanner, "Option B: ");
         String optionC =
-                readNonEmptyLine(scanner, "Option C: ");
+                readText(scanner, "Option C: ");
         String optionD =
-                readNonEmptyLine(scanner, "Option D: ");
+                readText(scanner, "Option D: ");
 
         char correctAnswer;
 
@@ -143,7 +141,10 @@ public class Main {
             String input =
                     scanner.nextLine().trim().toUpperCase();
 
-            if (input.matches("[ABCD]")) {
+            if (input.length() == 1 &&
+                    input.charAt(0) >= 'A' &&
+                    input.charAt(0) <= 'D') {
+
                 correctAnswer = input.charAt(0);
                 break;
             }
@@ -159,17 +160,17 @@ public class Main {
         };
 
         Question newQuestion =
-                new Question(questionText, options, correctAnswer);
+                new Question(question, options, correctAnswer);
 
         try {
             fileHandler.addQuestion(newQuestion);
-            showMessage("Question added successfully!");
+            printMessage("Question added successfully!");
         } catch (IOException e) {
-            showMessage("The question could not be saved.");
+            printMessage("The question could not be saved.");
         }
     }
 
-    static String readNonEmptyLine(
+    static String readText(
             Scanner scanner,
             String prompt
     ) {
@@ -205,72 +206,51 @@ public class Main {
         }
     }
 
-    static void showMessage(String message) {
+    static void printMessage(String message) {
         printText("");
         printBox(message);
     }
 
-    static String margin() {
-        int spaces =
-                Math.max(0, (CONSOLE_WIDTH - WIDTH - 2) / 2);
-        return " ".repeat(spaces);
-    }
-
     static void printBox(String text) {
-        printTop();
+        printBorder();
         printCentered(text);
-        printBottom();
+        printBorder();
     }
 
-    static void printTop() {
+    static void printBorder() {
         System.out.println(
-                margin() + "+" + "-".repeat(WIDTH) + "+"
-        );
-    }
-
-    static void printMiddle() {
-        System.out.println(
-                margin() + "+" + "-".repeat(WIDTH) + "+"
-        );
-    }
-
-    static void printBottom() {
-        System.out.println(
-                margin() + "+" + "-".repeat(WIDTH) + "+"
+                margin() + "+" + repeat("-", BOX_WIDTH) + "+"
         );
     }
 
     static void printLine(String text) {
-        String shortened = text;
-
-        if (shortened.length() > WIDTH) {
-            shortened = shortened.substring(0, WIDTH);
+        if (text.length() > BOX_WIDTH) {
+            text = text.substring(0, BOX_WIDTH);
         }
-
-        System.out.printf(
-                margin() + "|%-" + WIDTH + "s|%n",
-                shortened
-        );
-    }
-
-    static void printCentered(String text) {
-        String shortened = text;
-
-        if (shortened.length() > WIDTH) {
-            shortened = shortened.substring(0, WIDTH);
-        }
-
-        int leftPadding =
-                (WIDTH - shortened.length()) / 2;
-        int rightPadding =
-                WIDTH - shortened.length() - leftPadding;
 
         System.out.println(
                 margin()
                         + "|"
-                        + " ".repeat(leftPadding)
-                        + shortened
-                        + " ".repeat(rightPadding)
+                        + text
+                        + repeat(" ", BOX_WIDTH - text.length())
+                        + "|"
+        );
+    }
+
+    static void printCentered(String text) {
+        if (text.length() > BOX_WIDTH) {
+            text = text.substring(0, BOX_WIDTH);
+        }
+
+        int left = (BOX_WIDTH - text.length()) / 2;
+        int right = BOX_WIDTH - text.length() - left;
+
+        System.out.println(
+                margin()
+                        + "|"
+                        + repeat(" ", left)
+                        + text
+                        + repeat(" ", right)
                         + "|"
         );
     }
@@ -281,5 +261,25 @@ public class Main {
 
     static void printText(String text) {
         System.out.println(margin() + text);
+    }
+
+    static String margin() {
+        int size = (CONSOLE_WIDTH - BOX_WIDTH - 2) / 2;
+
+        if (size < 0) {
+            size = 0;
+        }
+
+        return repeat(" ", size);
+    }
+
+    static String repeat(String text, int amount) {
+        String result = "";
+
+        for (int i = 0; i < amount; i++) {
+            result += text;
+        }
+
+        return result;
     }
 }
