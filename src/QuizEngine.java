@@ -5,15 +5,15 @@ import java.util.Scanner;
 public class QuizEngine {
 
     ArrayList<Question> questions;
-    int score;
     Scanner scanner;
+    int score;
 
     public QuizEngine(
-            ArrayList<Question> list,
-            Scanner sc
+            ArrayList<Question> questions,
+            Scanner scanner
     ) {
-        questions = list;
-        scanner = sc;
+        this.questions = questions;
+        this.scanner = scanner;
         score = 0;
     }
 
@@ -24,7 +24,7 @@ public class QuizEngine {
             Question question = questions.get(i);
 
             Main.clearScreen();
-            Main.printTop();
+            Main.printBorder();
             Main.printCentered(
                     "QUESTION "
                             + (i + 1)
@@ -32,23 +32,30 @@ public class QuizEngine {
                             + questions.size()
             );
             Main.printCentered("Score: " + score);
-            Main.printBottom();
+            Main.printBorder();
             Main.printText("");
             Main.printText(question.questionText);
             Main.printText("");
-            Main.printText("A. " + question.options[0]);
-            Main.printText("B. " + question.options[1]);
-            Main.printText("C. " + question.options[2]);
-            Main.printText("D. " + question.options[3]);
+
+            for (int option = 0; option < 4; option++) {
+                char letter = (char) ('A' + option);
+
+                Main.printText(
+                        letter
+                                + ". "
+                                + question.options[option]
+                );
+            }
+
             Main.printText("");
 
-            char answer = getValidatedAnswer();
+            char answer = getAnswer();
 
             if (question.isCorrect(answer)) {
                 score++;
-                Main.showMessage("CORRECT!");
+                Main.printMessage("CORRECT!");
             } else {
-                Main.showMessage(
+                Main.printMessage(
                         "INCORRECT! Correct answer: "
                                 + question.correctAnswer
                 );
@@ -66,15 +73,19 @@ public class QuizEngine {
         return score;
     }
 
-    private char getValidatedAnswer() {
+    char getAnswer() {
         while (true) {
             Main.printPrompt("Your answer (A/B/C/D): ");
 
             String input =
                     scanner.nextLine().trim().toUpperCase();
 
-            if (input.matches("[ABCD]")) {
-                return input.charAt(0);
+            if (input.length() == 1) {
+                char answer = input.charAt(0);
+
+                if (answer >= 'A' && answer <= 'D') {
+                    return answer;
+                }
             }
 
             Main.printText(

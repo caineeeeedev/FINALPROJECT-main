@@ -7,50 +7,23 @@ import java.util.Scanner;
 
 public class LoginSystemLogin {
 
-    static String loggedInUsername = "";
-    static String loggedInID = "";
     static final String ACCOUNTS_FILE = "data/accounts.txt";
     static final Scanner scanner = new Scanner(System.in);
-
-    static String[] findAccount(String id) {
-        File file = new File(ACCOUNTS_FILE);
-
-        if (!file.exists()) {
-            return null;
-        }
-
-        try (BufferedReader reader =
-                     new BufferedReader(new FileReader(file))) {
-
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\|");
-
-                if (parts.length == 3 && parts[0].equals(id)) {
-                    return parts;
-                }
-            }
-        } catch (IOException e) {
-            Main.showMessage("Could not read the accounts file.");
-        }
-
-        return null;
-    }
+    static String loggedInUsername = "";
 
     public static boolean showLogin() {
         while (true) {
             Main.clearScreen();
-            Main.printTop();
+            Main.printBorder();
             Main.printCentered("QUITIQUIZ");
             Main.printCentered("ACCOUNT MENU");
-            Main.printMiddle();
+            Main.printBorder();
             Main.printLine("");
             Main.printLine("  [1] Log in");
             Main.printLine("  [2] Create an account");
             Main.printLine("  [3] Exit");
             Main.printLine("");
-            Main.printBottom();
+            Main.printBorder();
             Main.printPrompt("Choose an option (1-3): ");
 
             String choice = scanner.nextLine().trim();
@@ -74,7 +47,7 @@ public class LoginSystemLogin {
                     return false;
 
                 default:
-                    Main.showMessage(
+                    Main.printMessage(
                             "Invalid choice. Please enter 1, 2, or 3."
                     );
                     Main.waitForEnter(scanner);
@@ -86,9 +59,7 @@ public class LoginSystemLogin {
         Main.clearScreen();
         Main.printBox("LOG IN");
         Main.printText("");
-        Main.printText(
-                "Enter 0 to return to the account menu."
-        );
+        Main.printText("Enter 0 to return.");
         Main.printText("");
         Main.printPrompt("ID number (2026-xxxxxxx): ");
 
@@ -98,9 +69,9 @@ public class LoginSystemLogin {
             return false;
         }
 
-        if (!id.matches("2026-\\d{7}")) {
-            Main.showMessage(
-                    "Invalid ID format: 2026-xxxxxxx"
+        if (!validID(id)) {
+            Main.printMessage(
+                    "Invalid ID format. Use 2026-xxxxxxx."
             );
             Main.waitForEnter(scanner);
             return false;
@@ -111,35 +82,35 @@ public class LoginSystemLogin {
 
         String[] account = findAccount(id);
 
-        if (account != null && account[2].equals(password)) {
-            loggedInUsername = account[1];
-            loggedInID = account[0];
-
-            Main.clearScreen();
-            Main.printTop();
-            Main.printCentered("LOGIN SUCCESSFUL");
-            Main.printMiddle();
-            Main.printCentered(
-                    "Welcome, " + loggedInUsername + "!"
+        if (account == null || !account[2].equals(password)) {
+            Main.printMessage(
+                    "Incorrect ID number or password."
             );
-            Main.printCentered("ID: " + loggedInID);
-            Main.printBottom();
             Main.waitForEnter(scanner);
-            return true;
+            return false;
         }
 
-        Main.showMessage("Incorrect ID number or password.");
+        loggedInUsername = account[1];
+
+        Main.clearScreen();
+        Main.printBorder();
+        Main.printCentered("LOGIN SUCCESSFUL");
+        Main.printBorder();
+        Main.printCentered(
+                "Welcome, " + loggedInUsername + "!"
+        );
+        Main.printCentered("ID: " + id);
+        Main.printBorder();
         Main.waitForEnter(scanner);
-        return false;
+
+        return true;
     }
 
     static void signUp() {
         Main.clearScreen();
         Main.printBox("CREATE AN ACCOUNT");
         Main.printText("");
-        Main.printText(
-                "Enter 0 to return to the account menu."
-        );
+        Main.printText("Enter 0 to return.");
         Main.printText("");
         Main.printPrompt("ID number (2026-xxxxxxx): ");
 
@@ -149,16 +120,16 @@ public class LoginSystemLogin {
             return;
         }
 
-        if (!id.matches("2026-\\d{7}")) {
-            Main.showMessage(
-                    "Invalid ID format: 2026-xxxxxxx"
+        if (!validID(id)) {
+            Main.printMessage(
+                    "Invalid ID format. Use 2026-xxxxxxx."
             );
             Main.waitForEnter(scanner);
             return;
         }
 
         if (findAccount(id) != null) {
-            Main.showMessage(
+            Main.printMessage(
                     "That ID number is already registered."
             );
             Main.waitForEnter(scanner);
@@ -172,50 +143,99 @@ public class LoginSystemLogin {
         String password = scanner.nextLine();
 
         if (username.isEmpty() || password.isEmpty()) {
-            Main.showMessage("All fields are required.");
+            Main.printMessage("All fields are required.");
             Main.waitForEnter(scanner);
             return;
         }
 
         if (username.contains("|") || password.contains("|")) {
-            Main.showMessage("The | character is not allowed.");
+            Main.printMessage(
+                    "The | character is not allowed."
+            );
             Main.waitForEnter(scanner);
             return;
         }
 
         try {
             File file = new File(ACCOUNTS_FILE);
+            File folder = file.getParentFile();
 
-            if (file.getParentFile() != null) {
-                file.getParentFile().mkdirs();
+            if (folder != null) {
+                folder.mkdirs();
             }
 
-            try (FileWriter writer =
-                         new FileWriter(file, true)) {
-                writer.write(
-                        id
-                                + "|"
-                                + username
-                                + "|"
-                                + password
-                                + "\n"
-                );
-            }
+            FileWriter writer = new FileWriter(file, true);
+            writer.write(
+                    id + "|" + username + "|" + password + "\n"
+            );
+            writer.close();
 
             Main.clearScreen();
-            Main.printTop();
+            Main.printBorder();
             Main.printCentered("ACCOUNT CREATED");
-            Main.printMiddle();
+            Main.printBorder();
             Main.printCentered("Username: " + username);
             Main.printCentered("ID: " + id);
-            Main.printBottom();
+            Main.printBorder();
 
         } catch (IOException e) {
-            Main.showMessage(
+            Main.printMessage(
                     "The account could not be saved."
             );
         }
 
         Main.waitForEnter(scanner);
+    }
+
+    static String[] findAccount(String id) {
+        File file = new File(ACCOUNTS_FILE);
+
+        if (!file.exists()) {
+            return null;
+        }
+
+        try {
+            BufferedReader reader =
+                    new BufferedReader(new FileReader(file));
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] account = line.split("\\|");
+
+                if (account.length == 3 &&
+                        account[0].equals(id)) {
+
+                    reader.close();
+                    return account;
+                }
+            }
+
+            reader.close();
+        } catch (IOException e) {
+            Main.printMessage(
+                    "Could not read the accounts file."
+            );
+        }
+
+        return null;
+    }
+
+    static boolean validID(String id) {
+        if (id.length() != 12) {
+            return false;
+        }
+
+        if (!id.substring(0, 5).equals("2026-")) {
+            return false;
+        }
+
+        for (int i = 5; i < id.length(); i++) {
+            if (!Character.isDigit(id.charAt(i))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
