@@ -1,12 +1,10 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class QuizFileHandler {
-
     String questionsFile;
     String resultsFile;
 
@@ -24,15 +22,17 @@ public class QuizFileHandler {
         ArrayList<Question> questions =
                 new ArrayList<Question>();
 
-        BufferedReader reader =
-                new BufferedReader(
-                        new FileReader(questionsFile)
+        Scanner fileScanner =
+                new Scanner(
+                        new File(questionsFile)
                 );
 
-        String line;
+        while (fileScanner.hasNextLine()) {
+            String line =
+                    fileScanner.nextLine();
 
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split("\\|");
+            String[] parts =
+                    line.split("\\|");
 
             if (parts.length == 6) {
                 String[] options = {
@@ -47,17 +47,19 @@ public class QuizFileHandler {
                                 parts[5].charAt(0)
                         );
 
-                questions.add(
+                Question question =
                         new Question(
                                 parts[0],
                                 options,
                                 answer
-                        )
-                );
+                        );
+
+                questions.add(question);
             }
         }
 
-        reader.close();
+        fileScanner.close();
+
         return questions;
     }
 
@@ -65,7 +67,10 @@ public class QuizFileHandler {
             throws IOException {
 
         FileWriter writer =
-                new FileWriter(questionsFile, true);
+                new FileWriter(
+                        questionsFile,
+                        true
+                );
 
         writer.write(
                 question.questionText
@@ -92,12 +97,13 @@ public class QuizFileHandler {
     ) throws IOException {
 
         FileWriter writer =
-                new FileWriter(resultsFile, true);
+                new FileWriter(
+                        resultsFile,
+                        true
+                );
 
         writer.write(
-                LocalDateTime.now()
-                        + " | "
-                        + username
+                username
                         + " | Score: "
                         + score
                         + "/"

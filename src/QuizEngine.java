@@ -1,9 +1,7 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 
 public class QuizEngine {
-
     ArrayList<Question> questions;
     Scanner scanner;
     int score;
@@ -18,54 +16,45 @@ public class QuizEngine {
     }
 
     public int run() {
-        Collections.shuffle(questions);
+        shuffleQuestions();
 
         for (int i = 0; i < questions.size(); i++) {
             Question question = questions.get(i);
 
             Main.clearScreen();
-            Main.printBorder();
-            Main.printCentered(
+
+            System.out.println(
                     "QUESTION "
                             + (i + 1)
                             + " OF "
                             + questions.size()
             );
-            Main.printCentered("Score: " + score);
-            Main.printBorder();
-            Main.printText("");
-            Main.printText(question.questionText);
-            Main.printText("");
 
-            for (int option = 0; option < 4; option++) {
-                char letter = (char) ('A' + option);
+            System.out.println("Score: " + score);
+            System.out.println(
+                    "------------------------------"
+            );
 
-                Main.printText(
-                        letter
-                                + ". "
-                                + question.options[option]
-                );
-            }
-
-            Main.printText("");
+            question.display();
 
             char answer = getAnswer();
 
             if (question.isCorrect(answer)) {
                 score++;
-                Main.printMessage("CORRECT!");
+
+                System.out.println("CORRECT!");
             } else {
-                Main.printMessage(
+                System.out.println(
                         "INCORRECT! Correct answer: "
                                 + question.correctAnswer
                 );
             }
 
             if (i < questions.size() - 1) {
-                Main.printText("");
-                Main.printPrompt(
-                        "Press ENTER for the next question..."
+                System.out.print(
+                        "\nPress ENTER for the next question..."
                 );
+
                 scanner.nextLine();
             }
         }
@@ -73,9 +62,34 @@ public class QuizEngine {
         return score;
     }
 
+    void shuffleQuestions() {
+        for (int i = questions.size() - 1;
+             i > 0;
+             i--) {
+
+            int randomIndex =
+                    (int) (Math.random() * (i + 1));
+
+            Question temporary =
+                    questions.get(i);
+
+            questions.set(
+                    i,
+                    questions.get(randomIndex)
+            );
+
+            questions.set(
+                    randomIndex,
+                    temporary
+            );
+        }
+    }
+
     char getAnswer() {
         while (true) {
-            Main.printPrompt("Your answer (A/B/C/D): ");
+            System.out.print(
+                    "Your answer (A/B/C/D): "
+            );
 
             String input =
                     scanner.nextLine().trim().toUpperCase();
@@ -88,7 +102,7 @@ public class QuizEngine {
                 }
             }
 
-            Main.printText(
+            System.out.println(
                     "Please enter only A, B, C, or D."
             );
         }

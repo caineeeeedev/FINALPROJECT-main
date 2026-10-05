@@ -1,30 +1,29 @@
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class LoginSystemLogin {
+    static final String ACCOUNTS_FILE =
+            "data/accounts.txt";
 
-    static final String ACCOUNTS_FILE = "data/accounts.txt";
-    static final Scanner scanner = new Scanner(System.in);
+    static final Scanner scanner =
+            new Scanner(System.in);
+
     static String loggedInUsername = "";
 
     public static boolean showLogin() {
         while (true) {
             Main.clearScreen();
-            Main.printBorder();
-            Main.printCentered("QUITIQUIZ");
-            Main.printCentered("ACCOUNT MENU");
-            Main.printBorder();
-            Main.printLine("");
-            Main.printLine("  [1] Log in");
-            Main.printLine("  [2] Create an account");
-            Main.printLine("  [3] Exit");
-            Main.printLine("");
-            Main.printBorder();
-            Main.printPrompt("Choose an option (1-3): ");
+
+            System.out.println("==============================");
+            System.out.println("          QUITIQUIZ");
+            System.out.println("        ACCOUNT MENU");
+            System.out.println("==============================");
+            System.out.println("[1] Log in");
+            System.out.println("[2] Create an account");
+            System.out.println("[3] Exit");
+            System.out.print("Choose an option (1-3): ");
 
             String choice = scanner.nextLine().trim();
 
@@ -41,15 +40,18 @@ public class LoginSystemLogin {
 
                 case "3":
                     Main.clearScreen();
-                    Main.printBox(
+
+                    System.out.println(
                             "THANK YOU FOR USING QUITIQUIZ"
                     );
+
                     return false;
 
                 default:
-                    Main.printMessage(
+                    System.out.println(
                             "Invalid choice. Please enter 1, 2, or 3."
                     );
+
                     Main.waitForEnter(scanner);
             }
         }
@@ -57,11 +59,10 @@ public class LoginSystemLogin {
 
     static boolean login() {
         Main.clearScreen();
-        Main.printBox("LOG IN");
-        Main.printText("");
-        Main.printText("Enter 0 to return.");
-        Main.printText("");
-        Main.printPrompt("ID number (2026-xxxxxxx): ");
+
+        System.out.println("========== LOG IN ==========");
+        System.out.println("Enter 0 to return.");
+        System.out.print("ID number (2026-xxxxxxx): ");
 
         String id = scanner.nextLine().trim();
 
@@ -70,22 +71,26 @@ public class LoginSystemLogin {
         }
 
         if (!validID(id)) {
-            Main.printMessage(
+            System.out.println(
                     "Invalid ID format. Use 2026-xxxxxxx."
             );
+
             Main.waitForEnter(scanner);
             return false;
         }
 
-        Main.printPrompt("Password: ");
+        System.out.print("Password: ");
         String password = scanner.nextLine();
 
         String[] account = findAccount(id);
 
-        if (account == null || !account[2].equals(password)) {
-            Main.printMessage(
+        if (account == null
+                || !account[2].equals(password)) {
+
+            System.out.println(
                     "Incorrect ID number or password."
             );
+
             Main.waitForEnter(scanner);
             return false;
         }
@@ -93,14 +98,13 @@ public class LoginSystemLogin {
         loggedInUsername = account[1];
 
         Main.clearScreen();
-        Main.printBorder();
-        Main.printCentered("LOGIN SUCCESSFUL");
-        Main.printBorder();
-        Main.printCentered(
+
+        System.out.println("LOGIN SUCCESSFUL");
+        System.out.println(
                 "Welcome, " + loggedInUsername + "!"
         );
-        Main.printCentered("ID: " + id);
-        Main.printBorder();
+        System.out.println("ID: " + id);
+
         Main.waitForEnter(scanner);
 
         return true;
@@ -108,11 +112,12 @@ public class LoginSystemLogin {
 
     static void signUp() {
         Main.clearScreen();
-        Main.printBox("CREATE AN ACCOUNT");
-        Main.printText("");
-        Main.printText("Enter 0 to return.");
-        Main.printText("");
-        Main.printPrompt("ID number (2026-xxxxxxx): ");
+
+        System.out.println(
+                "===== CREATE AN ACCOUNT ====="
+        );
+        System.out.println("Enter 0 to return.");
+        System.out.print("ID number (2026-xxxxxxx): ");
 
         String id = scanner.nextLine().trim();
 
@@ -121,37 +126,45 @@ public class LoginSystemLogin {
         }
 
         if (!validID(id)) {
-            Main.printMessage(
+            System.out.println(
                     "Invalid ID format. Use 2026-xxxxxxx."
             );
+
             Main.waitForEnter(scanner);
             return;
         }
 
         if (findAccount(id) != null) {
-            Main.printMessage(
+            System.out.println(
                     "That ID number is already registered."
             );
+
             Main.waitForEnter(scanner);
             return;
         }
 
-        Main.printPrompt("Username: ");
+        System.out.print("Username: ");
         String username = scanner.nextLine().trim();
 
-        Main.printPrompt("Password: ");
+        System.out.print("Password: ");
         String password = scanner.nextLine();
 
         if (username.isEmpty() || password.isEmpty()) {
-            Main.printMessage("All fields are required.");
+            System.out.println(
+                    "All fields are required."
+            );
+
             Main.waitForEnter(scanner);
             return;
         }
 
-        if (username.contains("|") || password.contains("|")) {
-            Main.printMessage(
+        if (username.contains("|")
+                || password.contains("|")) {
+
+            System.out.println(
                     "The | character is not allowed."
             );
+
             Main.waitForEnter(scanner);
             return;
         }
@@ -160,26 +173,29 @@ public class LoginSystemLogin {
             File file = new File(ACCOUNTS_FILE);
             File folder = file.getParentFile();
 
-            if (folder != null) {
-                folder.mkdirs();
+            if (folder != null && !folder.exists()) {
+                folder.mkdir();
             }
 
-            FileWriter writer = new FileWriter(file, true);
+            FileWriter writer =
+                    new FileWriter(file, true);
+
             writer.write(
-                    id + "|" + username + "|" + password + "\n"
+                    id + "|"
+                            + username + "|"
+                            + password + "\n"
             );
+
             writer.close();
 
-            Main.clearScreen();
-            Main.printBorder();
-            Main.printCentered("ACCOUNT CREATED");
-            Main.printBorder();
-            Main.printCentered("Username: " + username);
-            Main.printCentered("ID: " + id);
-            Main.printBorder();
+            System.out.println("ACCOUNT CREATED");
+            System.out.println(
+                    "Username: " + username
+            );
+            System.out.println("ID: " + id);
 
         } catch (IOException e) {
-            Main.printMessage(
+            System.out.println(
                     "The account could not be saved."
             );
         }
@@ -195,25 +211,28 @@ public class LoginSystemLogin {
         }
 
         try {
-            BufferedReader reader =
-                    new BufferedReader(new FileReader(file));
+            Scanner fileScanner =
+                    new Scanner(file);
 
-            String line;
+            while (fileScanner.hasNextLine()) {
+                String line =
+                        fileScanner.nextLine();
 
-            while ((line = reader.readLine()) != null) {
-                String[] account = line.split("\\|");
+                String[] account =
+                        line.split("\\|");
 
-                if (account.length == 3 &&
-                        account[0].equals(id)) {
+                if (account.length == 3
+                        && account[0].equals(id)) {
 
-                    reader.close();
+                    fileScanner.close();
                     return account;
                 }
             }
 
-            reader.close();
+            fileScanner.close();
+
         } catch (IOException e) {
-            Main.printMessage(
+            System.out.println(
                     "Could not read the accounts file."
             );
         }
