@@ -9,16 +9,10 @@ public class LoginSystemLogin {
 
     static String loggedInUsername = "";
     static String loggedInID = "";
-
     static final String ACCOUNTS_FILE = "data/accounts.txt";
+    static final Scanner scanner = new Scanner(System.in);
 
-    static Scanner scanner = new Scanner(System.in);
-
-
-    // Finds an account line in the file by ID.
-    // Returns {id, username, password} or null if not found.
     static String[] findAccount(String id) {
-
         File file = new File(ACCOUNTS_FILE);
 
         if (!file.exists()) {
@@ -26,230 +20,175 @@ public class LoginSystemLogin {
         }
 
         try (BufferedReader reader =
-                new BufferedReader(new FileReader(file))) {
+                     new BufferedReader(new FileReader(file))) {
 
             String line;
 
             while ((line = reader.readLine()) != null) {
-
                 String[] parts = line.split("\\|");
 
                 if (parts.length == 3 && parts[0].equals(id)) {
                     return parts;
                 }
             }
-
         } catch (IOException e) {
-
-            System.out.println(
-                    "Error reading accounts: " + e.getMessage()
-            );
+            Main.showMessage("Could not read the accounts file.");
         }
 
         return null;
     }
 
-
     public static boolean showLogin() {
-
         while (true) {
-
-            System.out.println();
-            System.out.println("=========================================");
-            System.out.println("             QUITIQUIZ LOGIN");
-            System.out.println("=========================================");
-
-            System.out.println("[1] LOG IN");
-            System.out.println("[2] SIGN UP");
-            System.out.println("[3] EXIT");
-
-            System.out.println("=========================================");
-
-            System.out.print("Choose an option: ");
+            Main.clearScreen();
+            Main.printTop();
+            Main.printCentered("QUITIQUIZ");
+            Main.printCentered("ACCOUNT MENU");
+            Main.printMiddle();
+            Main.printLine("");
+            Main.printLine("  [1] Log in");
+            Main.printLine("  [2] Create an account");
+            Main.printLine("  [3] Exit");
+            Main.printLine("");
+            Main.printBottom();
+            System.out.print("Choose an option (1-3): ");
 
             String choice = scanner.nextLine().trim();
 
             switch (choice) {
-
-                // LOG IN
-                case "1" -> {
+                case "1":
                     if (login()) {
                         return true;
                     }
-                }
+                    break;
 
-                // SIGN UP
-                case "2" -> signUp();
+                case "2":
+                    signUp();
+                    break;
 
-                // EXIT
-                case "3" -> {
-                    System.out.println();
-                    System.out.println("Thank you for using QuitiQUIZ!");
+                case "3":
+                    Main.clearScreen();
+                    Main.printBox("THANK YOU FOR USING QUITIQUIZ");
                     return false;
-                }
 
-                // INVALID OPTION
-                default -> {
-                    System.out.println();
-                    System.out.println("Invalid option!");
-                    System.out.println("Please choose 1, 2, or 3.");
-                }
+                default:
+                    Main.showMessage(
+                            "Invalid choice. Please enter 1, 2, or 3."
+                    );
+                    Main.waitForEnter(scanner);
             }
         }
     }
 
-
     static boolean login() {
-
-        System.out.println();
-        System.out.println("------------- LOG IN -------------");
-
-        System.out.println("ENTER 0 TO RETURN TO LOGIN CHOICES");
-        System.out.print("ID Number (2026-xxxxxxx): ");
+        Main.clearScreen();
+        Main.printBox("LOG IN");
+        System.out.println("Enter 0 to return to the account menu.\n");
+        System.out.print("ID number (2026-xxxxxxx): ");
 
         String id = scanner.nextLine().trim();
 
-        // RETURN TO LOGIN CHOICES
         if (id.equals("0")) {
-
-            System.out.println();
-            System.out.println("Returning to Login Choices...");
-
             return false;
         }
 
         if (!id.matches("2026-\\d{7}")) {
-
-            System.out.println();
-            System.out.println("Invalid ID Number!");
-            System.out.println("Use this format: 2026-xxxxxxx");
-            System.out.println("Example: 2026-1234567");
-
+            Main.showMessage("Invalid ID format: 2026-xxxxxxx");
+            Main.waitForEnter(scanner);
             return false;
         }
 
         System.out.print("Password: ");
-
         String password = scanner.nextLine();
 
         String[] account = findAccount(id);
 
         if (account != null && account[2].equals(password)) {
-
             loggedInUsername = account[1];
-            loggedInID = id;
+            loggedInID = account[0];
 
-            System.out.println();
-            System.out.println("=========================================");
-            System.out.println("           LOGIN SUCCESSFUL");
-            System.out.println("=========================================");
-            System.out.println("Welcome, " + loggedInUsername);
-            System.out.println("ID Number: " + loggedInID);
-            System.out.println("=========================================");
-
+            Main.clearScreen();
+            Main.printTop();
+            Main.printCentered("LOGIN SUCCESSFUL");
+            Main.printMiddle();
+            Main.printCentered("Welcome, " + loggedInUsername + "!");
+            Main.printCentered("ID: " + loggedInID);
+            Main.printBottom();
+            Main.waitForEnter(scanner);
             return true;
-
-        } else {
-
-            System.out.println();
-            System.out.println("Invalid ID Number or Password!");
-
-            return false;
         }
+
+        Main.showMessage("Incorrect ID number or password.");
+        Main.waitForEnter(scanner);
+        return false;
     }
 
-
-    private static void signUp() {
-
-        System.out.println();
-        System.out.println("------------- SIGN UP -------------");
-
-        System.out.println("ENTER 0 TO RETURN TO LOGIN CHOICES");
-        System.out.print("ID Number (2026-xxxxxxx): ");
+    static void signUp() {
+        Main.clearScreen();
+        Main.printBox("CREATE AN ACCOUNT");
+        System.out.println("Enter 0 to return to the account menu.\n");
+        System.out.print("ID number (2026-xxxxxxx): ");
 
         String id = scanner.nextLine().trim();
 
-        // RETURN TO LOGIN CHOICES
         if (id.equals("0")) {
-
-            System.out.println();
-            System.out.println("Returning to Login Choices...");
-
             return;
         }
 
         if (!id.matches("2026-\\d{7}")) {
-
-            System.out.println();
-            System.out.println("Invalid ID Number!");
-            System.out.println("ID must follow this format:");
-            System.out.println("2026-xxxxxxx");
-            System.out.println("Example: 2026-1234567");
-
+            Main.showMessage("Invalid ID format: 2026-xxxxxxx");
+            Main.waitForEnter(scanner);
             return;
         }
 
         if (findAccount(id) != null) {
-
-            System.out.println();
-            System.out.println("ID Number already registered!");
-
+            Main.showMessage("That ID number is already registered.");
+            Main.waitForEnter(scanner);
             return;
         }
 
         System.out.print("Username: ");
-
         String username = scanner.nextLine().trim();
 
         System.out.print("Password: ");
-
         String password = scanner.nextLine();
 
         if (username.isEmpty() || password.isEmpty()) {
-
-            System.out.println();
-            System.out.println("Please fill in all fields!");
-
+            Main.showMessage("All fields are required.");
+            Main.waitForEnter(scanner);
             return;
         }
 
-        // Usernames/passwords can't contain "|" since it's the separator
         if (username.contains("|") || password.contains("|")) {
-
-            System.out.println();
-            System.out.println("Username and password cannot contain '|'.");
-
+            Main.showMessage("The | character is not allowed.");
+            Main.waitForEnter(scanner);
             return;
         }
 
         try {
-
             File file = new File(ACCOUNTS_FILE);
 
-            // Create data folder
             if (file.getParentFile() != null) {
                 file.getParentFile().mkdirs();
             }
 
             try (FileWriter writer = new FileWriter(file, true)) {
-
-                writer.write(id + "|" + username + "|" + password + "\n");
+                writer.write(
+                        id + "|" + username + "|" + password + "\n"
+                );
             }
 
-            System.out.println();
-            System.out.println("=========================================");
-            System.out.println("     ACCOUNT CREATED SUCCESSFULLY");
-            System.out.println("=========================================");
-            System.out.println("Username: " + username);
-            System.out.println("ID Number: " + id);
-            System.out.println("Your account has been saved.");
-            System.out.println("=========================================");
-
+            Main.clearScreen();
+            Main.printTop();
+            Main.printCentered("ACCOUNT CREATED");
+            Main.printMiddle();
+            Main.printCentered("Username: " + username);
+            Main.printCentered("ID: " + id);
+            Main.printBottom();
         } catch (IOException e) {
-
-            System.out.println();
-            System.out.println("Could not save the account!");
-            System.out.println("Error: " + e.getMessage());
+            Main.showMessage("The account could not be saved.");
         }
+
+        Main.waitForEnter(scanner);
     }
 }

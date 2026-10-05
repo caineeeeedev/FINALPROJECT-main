@@ -3,192 +3,230 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-
-
-// six seven
 public class Main {
 
-   static final String QUESTIONS_FILE = "data/questions.txt";
-   static final String RESULTS_FILE = "data/results.txt";
+    static final String QUESTIONS_FILE = "data/questions.txt";
+    static final String RESULTS_FILE = "data/results.txt";
+    static final int WIDTH = 62;
 
     public static void main(String[] args) {
-
         if (!LoginSystemLogin.showLogin()) {
-    return;
-    }
+            return;
+        }
 
-
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = LoginSystemLogin.scanner;
         QuizFileHandler fileHandler = new QuizFileHandler(QUESTIONS_FILE, RESULTS_FILE);
-  
 
-    
+        clearScreen();
         Logo.print();
-        System.out.print("                                                        Type \"ENTER\" to Enter (\"QUIT\" to quitQUIT): ");
-        String Enter = scanner.nextLine();
+        waitForEnter(scanner);
 
-
-        if (Enter.equalsIgnoreCase("ENTER")){
-        System.out.println();
-        System.out.println("                                                        =================================================");
-        System.out.println("                                                                WELCOME TO THE QuitiQUIZ PROGRAM");
-        System.out.println("                                                        =================================================");
-
-        String menuChoice;
         boolean running = true;
 
         while (running) {
+            clearScreen();
+            showMainMenu();
 
-            System.out.println("                                                            +---------------------------------------+");
-            System.out.println("                                                            |               MAIN MENU               |");
-            System.out.println("                                                            +---------------------------------------+");
-            System.out.println("                                                            |                                       |");
-            System.out.println("                                                            |   [1]  Add a new question             |");
-            System.out.println("                                                            |   [2]  Take the quiz                  |");
-            System.out.println("                                                            |   [3]  Exit                           |");
-            System.out.println("                                                            |                                       |");
-            System.out.println("                                                            +---------------------------------------+");
-            System.out.print("                                                                     Choose an option (1 - 3): ");
+            String menuChoice = scanner.nextLine().trim();
 
-            menuChoice = scanner.nextLine();
-
-            switch(menuChoice) {
-
+            switch (menuChoice) {
                 case "1":
+                    clearScreen();
                     addNewQuestion(fileHandler, scanner);
-                    System.out.println();
+                    pause(scanner);
                     break;
 
-                case "2": {
-                    System.out.println();
-                    String playerName = LoginSystemLogin.loggedInUsername;
-                    
-
-                    ArrayList<Question> questions;
-
-                    try {
-                        questions = fileHandler.loadQuestions();
-                    } catch (FileNotFoundException e) {
-                        System.out.println("Error: Could not find the questions file at '" + QUESTIONS_FILE + "'.");
-                        System.out.println("Please make sure the file exists and try again.");
-                        scanner.close();
-                        return;
-                    } catch (IOException e) {
-                        System.out.println("Error: Something went wrong while reading the questions file.");
-                        System.out.println("Details: " + e.getMessage());
-                        scanner.close();
-                        return;
-                    }
-
-                    if (questions.isEmpty()) {
-                        System.out.println("No questions were found in the file. Exiting.");
-                        scanner.close();
-                        return;
-                    }
-
-                    QuizEngine engine = new QuizEngine(questions, scanner);
-                    int finalScore = engine.run();
-
-                    System.out.println("\n=========================================");
-                    System.out.println(playerName + ", you scored " + finalScore + " out of " + questions.size() + "!");
-                    System.out.println("=========================================");
-
-                    // --- File handling + exception handling for saving results ---
-                    try {
-                        fileHandler.saveResult(playerName, finalScore, questions.size());
-                        System.out.println("Your result has been saved to " + RESULTS_FILE);
-                    } catch (IOException e) {
-                        System.out.println("Warning: Could not save your result. Details: " + e.getMessage());
-                    }//CATCH
+                case "2":
+                    clearScreen();
+                    takeQuiz(fileHandler, scanner);
+                    pause(scanner);
                     break;
-                }
 
                 case "3":
-                    System.out.println("THANKYOU FOR USING QuitiQUIZ");
+                    clearScreen();
+                    printBox("THANK YOU FOR USING QUITIQUIZ");
+                    System.out.println();
                     running = false;
                     break;
 
                 default:
-                    System.out.println("Invalid choice. Please enter 1, 2, or 3.\n");
-                    break;
-
-        
-            }//swich
-        }//loop while
-    }//if loop
-    
-        
-    else if (Enter.equalsIgnoreCase("QUIT")) {
-        System.out.println("Thank you for using the QuitiQUIZ Program");
-    }//elseIF
-
-    else {
-        System.out.println("Invalid choice. Please type ENTER or QUIT.");
-    }//else
-}// end of main
-
-
-    private static void addNewQuestion(QuizFileHandler fileHandler, Scanner scanner) {
-        System.out.println("\n--- Add a New Question ---");
-
-        String questionText = readNonEmptyLine(scanner, "Enter a new question: ");
-        String optionA = readNonEmptyLine(scanner, "Enter option A: ");
-        String optionB = readNonEmptyLine(scanner, "Enter option B: ");
-        String optionC = readNonEmptyLine(scanner, "Enter option C: ");
-        String optionD = readNonEmptyLine(scanner, "Enter option D: ");
-
-        char correctAnswer;
-        while (true) {
-            System.out.print("What is the correct answer? (A/B/C/D): ");
-            String input = scanner.nextLine();
-
-            if (input.equalsIgnoreCase("A")) {
-                correctAnswer = 'A';
-                break;
+                    showMessage("Invalid choice. Please enter 1, 2, or 3.");
+                    pause(scanner);
             }
-            if (input.equalsIgnoreCase("B")) {
-                correctAnswer = 'B';
-                break;
-            }
-            if (input.equalsIgnoreCase("C")) {
-                correctAnswer = 'C';
-                break;
-            }
-            if (input.equalsIgnoreCase("D")) {
-                correctAnswer = 'D';
-                break;
-            }
-
-            System.out.println("Invalid answer. Please enter A, B, C, or D.");
-        }
-
-        String[] options = { optionA, optionB, optionC, optionD };
-        Question newQuestion = new Question(questionText, options, correctAnswer);
-
-        try {
-            fileHandler.addQuestion(newQuestion);
-            System.out.println("Your question was added successfully!");
-        } catch (IOException e) {
-            System.out.println("Error: Could not save your question. Details: " + e.getMessage());
         }
     }
 
+    static void showMainMenu() {
+        printTop();
+        printCentered("QUITIQUIZ");
+        printCentered("MAIN MENU");
+        printMiddle();
+        printLine("");
+        printLine("  [1] Add a new question");
+        printLine("  [2] Take the quiz");
+        printLine("  [3] Exit");
+        printLine("");
+        printBottom();
+        System.out.print("Choose an option (1-3): ");
+    }
 
-    private static String readNonEmptyLine(Scanner scanner, String prompt) {
+    static void takeQuiz(QuizFileHandler fileHandler, Scanner scanner) {
+        ArrayList<Question> questions;
+
+        try {
+            questions = fileHandler.loadQuestions();
+        } catch (FileNotFoundException e) {
+            showMessage("Questions file could not be found.");
+            return;
+        } catch (IOException e) {
+            showMessage("Could not read the questions file.");
+            return;
+        }
+
+        if (questions.isEmpty()) {
+            showMessage("There are currently no quiz questions.");
+            return;
+        }
+
+        QuizEngine engine = new QuizEngine(questions, scanner);
+        int finalScore = engine.run();
+        String playerName = LoginSystemLogin.loggedInUsername;
+
+        clearScreen();
+        printTop();
+        printCentered("QUIZ COMPLETE");
+        printMiddle();
+        printCentered(playerName + ", your final score is");
+        printCentered(finalScore + " out of " + questions.size());
+        printBottom();
+
+        try {
+            fileHandler.saveResult(playerName, finalScore, questions.size());
+            System.out.println("\nYour result was saved successfully.");
+        } catch (IOException e) {
+            System.out.println("\nWarning: Your result could not be saved.");
+        }
+    }
+
+    static void addNewQuestion(QuizFileHandler fileHandler, Scanner scanner) {
+        printBox("ADD A NEW QUESTION");
+
+        String questionText = readNonEmptyLine(scanner, "Question: ");
+        String optionA = readNonEmptyLine(scanner, "Option A: ");
+        String optionB = readNonEmptyLine(scanner, "Option B: ");
+        String optionC = readNonEmptyLine(scanner, "Option C: ");
+        String optionD = readNonEmptyLine(scanner, "Option D: ");
+
+        char correctAnswer;
+
+        while (true) {
+            System.out.print("Correct answer (A/B/C/D): ");
+            String input = scanner.nextLine().trim().toUpperCase();
+
+            if (input.matches("[ABCD]")) {
+                correctAnswer = input.charAt(0);
+                break;
+            }
+
+            System.out.println("Please enter only A, B, C, or D.");
+        }
+
+        String[] options = {optionA, optionB, optionC, optionD};
+        Question newQuestion =
+                new Question(questionText, options, correctAnswer);
+
+        try {
+            fileHandler.addQuestion(newQuestion);
+            showMessage("Question added successfully!");
+        } catch (IOException e) {
+            showMessage("The question could not be saved.");
+        }
+    }
+
+    static String readNonEmptyLine(
+            Scanner scanner,
+            String prompt
+    ) {
         while (true) {
             System.out.print(prompt);
             String input = scanner.nextLine().trim();
 
             if (input.isEmpty()) {
-                System.out.println("This can't be empty. Please try again.");
+                System.out.println("This field cannot be empty.");
             } else if (input.contains("|")) {
-                System.out.println("Please don't use the '|' character. Please try again.");
+                System.out.println("The | character is not allowed.");
             } else {
                 return input;
-            
             }
         }
     }
-}
 
-// Six Seven
+    static void waitForEnter(Scanner scanner) {
+        System.out.print("\nPress ENTER to continue...");
+        scanner.nextLine();
+    }
+
+    static void pause(Scanner scanner) {
+        System.out.print("\nPress ENTER to return to the menu...");
+        scanner.nextLine();
+    }
+
+    static void clearScreen() {
+        for (int i = 0; i < 30; i++) {
+            System.out.println();
+        }
+    }
+
+    static void showMessage(String message) {
+        System.out.println();
+        printBox(message);
+    }
+
+    static void printBox(String text) {
+        printTop();
+        printCentered(text);
+        printBottom();
+    }
+
+    static void printTop() {
+        System.out.println("+" + "-".repeat(WIDTH) + "+");
+    }
+
+    static void printMiddle() {
+        System.out.println("+" + "-".repeat(WIDTH) + "+");
+    }
+
+    static void printBottom() {
+        System.out.println("+" + "-".repeat(WIDTH) + "+");
+    }
+
+    static void printLine(String text) {
+        String shortened = text;
+
+        if (shortened.length() > WIDTH) {
+            shortened = shortened.substring(0, WIDTH);
+        }
+
+        System.out.printf("|%-" + WIDTH + "s|%n", shortened);
+    }
+
+    static void printCentered(String text) {
+        String shortened = text;
+
+        if (shortened.length() > WIDTH) {
+            shortened = shortened.substring(0, WIDTH);
+        }
+
+        int leftPadding = (WIDTH - shortened.length()) / 2;
+        int rightPadding =
+                WIDTH - shortened.length() - leftPadding;
+
+        System.out.println(
+                "|" +
+                " ".repeat(leftPadding) +
+                shortened +
+                " ".repeat(rightPadding) +
+                "|"
+        );
+    }
+}

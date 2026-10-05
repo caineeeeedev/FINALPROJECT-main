@@ -2,9 +2,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
 
-
 public class QuizEngine {
-    //variables
+
     ArrayList<Question> questions;
     int score;
     Scanner scanner;
@@ -16,30 +15,44 @@ public class QuizEngine {
     }
 
     public int run() {
-
         Collections.shuffle(questions);
 
-        int number = 1;
+        for (int i = 0; i < questions.size(); i++) {
+            Question question = questions.get(i);
 
-        for (Question q : questions) {
+            Main.clearScreen();
+            Main.printTop();
+            Main.printCentered(
+                    "QUESTION " + (i + 1) + " OF " + questions.size()
+            );
+            Main.printCentered("Score: " + score);
+            Main.printBottom();
 
-            System.out.println("\nQuestion " + number + " of " + questions.size());
-            System.out.println(q.questionText);
-            System.out.println("   A) " + q.options[0]);
-            System.out.println("   B) " + q.options[1]);
-            System.out.println("   C) " + q.options[2]);
-            System.out.println("   D) " + q.options[3]);
+            System.out.println();
+            System.out.println(question.questionText);
+            System.out.println();
+            System.out.println("  A. " + question.options[0]);
+            System.out.println("  B. " + question.options[1]);
+            System.out.println("  C. " + question.options[2]);
+            System.out.println("  D. " + question.options[3]);
+            System.out.println();
 
             char answer = getValidatedAnswer();
 
-            if (q.isCorrect(answer)) {
-                System.out.println("Correct!");
+            if (question.isCorrect(answer)) {
                 score++;
+                Main.showMessage("CORRECT!");
             } else {
-                System.out.println("Incorrect. The correct answer was " + q.correctAnswer + ".");
+                Main.showMessage(
+                        "INCORRECT! Correct answer: "
+                                + question.correctAnswer
+                );
             }
 
-            number++;
+            if (i < questions.size() - 1) {
+                System.out.print("\nPress ENTER for the next question...");
+                scanner.nextLine();
+            }
         }
 
         return score;
@@ -48,22 +61,13 @@ public class QuizEngine {
     private char getValidatedAnswer() {
         while (true) {
             System.out.print("Your answer (A/B/C/D): ");
-            String input = scanner.nextLine();
+            String input = scanner.nextLine().trim().toUpperCase();
 
-            if (input.equalsIgnoreCase("A")) {
-                return 'A';
-            }
-            if (input.equalsIgnoreCase("B")) {
-                return 'B';
-            }
-            if (input.equalsIgnoreCase("C")) {
-                return 'C';
-            }
-            if (input.equalsIgnoreCase("D")) {
-                return 'D';
+            if (input.matches("[ABCD]")) {
+                return input.charAt(0);
             }
 
-            System.out.println("Invalid answer. Please enter A, B, C, or D.");
+            System.out.println("Please enter only A, B, C, or D.");
         }
     }
 }
