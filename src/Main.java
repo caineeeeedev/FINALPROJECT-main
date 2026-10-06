@@ -74,7 +74,7 @@ public class Main {
             );
 
             String choice =
-                    scanner.nextLine().trim();
+                    scanner.nextLine();
 
             switch (choice) {
                 case "1":
