@@ -1,10 +1,14 @@
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-    static final String QUESTIONS_FILE = "data/questions.txt";
-    static final String RESULTS_FILE = "data/results.txt";
+    static final String QUESTIONS_FILE =
+            "data/questions.txt";
+
+    static final String RESULTS_FILE =
+            "data/results.txt";
 
     static final int UI_WIDTH = 54;
     static final int CONSOLE_WIDTH = 100;
@@ -14,7 +18,8 @@ public class Main {
             return;
         }
 
-        Scanner scanner = LoginSystemLogin.scanner;
+        Scanner scanner =
+                LoginSystemLogin.scanner;
 
         QuizFileHandler fileHandler =
                 new QuizFileHandler(
@@ -52,15 +57,27 @@ public class Main {
             );
 
             System.out.println();
+
             System.out.println(
-                    margin() + "       [1]  Add a new question"
+                    margin()
+                            + "       [1]  Add a new question"
             );
+
             System.out.println(
-                    margin() + "       [2]  Take the quiz"
+                    margin()
+                            + "       [2]  Take the quiz"
             );
+
             System.out.println(
-                    margin() + "       [3]  Exit"
+                    margin()
+                            + "       [3]  View rankings"
             );
+
+            System.out.println(
+                    margin()
+                            + "       [4]  Exit"
+            );
+
             System.out.println();
 
             System.out.println(
@@ -70,7 +87,7 @@ public class Main {
 
             System.out.print(
                     margin()
-                            + "  Choose an option (1-3): "
+                            + "  Choose an option (1-4): "
             );
 
             String choice =
@@ -79,17 +96,33 @@ public class Main {
             switch (choice) {
                 case "1":
                     clearScreen();
-                    addNewQuestion(fileHandler, scanner);
+
+                    addNewQuestion(
+                            fileHandler,
+                            scanner
+                    );
+
                     pause(scanner);
                     break;
 
                 case "2":
                     clearScreen();
-                    takeQuiz(fileHandler, scanner);
+
+                    takeQuiz(
+                            fileHandler,
+                            scanner
+                    );
+
                     pause(scanner);
                     break;
 
                 case "3":
+                    clearScreen();
+                    showRankings();
+                    pause(scanner);
+                    break;
+
+                case "4":
                     clearScreen();
 
                     System.out.println(
@@ -113,10 +146,12 @@ public class Main {
                     );
 
                     System.out.println();
+
                     System.out.println(
                             margin()
                                     + "  Thank you for using QuitiQuiz."
                     );
+
                     System.out.println();
 
                     System.out.println(
@@ -129,9 +164,10 @@ public class Main {
 
                 default:
                     System.out.println();
+
                     System.out.println(
                             margin()
-                                    + "  >> Invalid choice. Please enter 1, 2, or 3."
+                                    + "  >> Invalid choice. Please enter 1, 2, 3, or 4."
                     );
 
                     pause(scanner);
@@ -177,7 +213,8 @@ public class Main {
                         scanner
                 );
 
-        int score = quiz.run();
+        int score =
+                quiz.run();
 
         String username =
                 LoginSystemLogin.loggedInUsername;
@@ -216,7 +253,7 @@ public class Main {
                 margin()
                         + "  Score  : "
                         + score
-                        + " / "
+                        + "/"
                         + questions.size()
         );
 
@@ -374,6 +411,236 @@ public class Main {
         }
     }
 
+    static void showRankings() {
+        ArrayList<String> names =
+                new ArrayList<String>();
+
+        ArrayList<Integer> scores =
+                new ArrayList<Integer>();
+
+        ArrayList<Integer> totals =
+                new ArrayList<Integer>();
+
+        File file =
+                new File(RESULTS_FILE);
+
+        System.out.println(
+                margin()
+                        + "+------------------------------------------------------+"
+        );
+
+        System.out.println(
+                margin()
+                        + "|                      QUITIQUIZ                       |"
+        );
+
+        System.out.println(
+                margin()
+                        + "|                       RANKINGS                       |"
+        );
+
+        System.out.println(
+                margin()
+                        + "+------------------------------------------------------+"
+        );
+
+        if (!file.exists()) {
+            System.out.println();
+
+            System.out.println(
+                    margin()
+                            + "  >> There are no saved results yet."
+            );
+
+            return;
+        }
+
+        try {
+            Scanner fileScanner =
+                    new Scanner(file);
+
+            while (fileScanner.hasNextLine()) {
+                String line =
+                        fileScanner.nextLine().trim();
+
+                if (!line.isEmpty()) {
+                    String[] data =
+                            line.split("\\|");
+
+                    if (data.length >= 2) {
+                        String username =
+                                data[data.length - 2].trim();
+
+                        String scoreText =
+                                data[data.length - 1].trim();
+
+                        if (scoreText.startsWith("Score:")) {
+                            scoreText =
+                                    scoreText.substring(6).trim();
+
+                            String[] scoreParts =
+                                    scoreText.split("/");
+
+                            if (scoreParts.length == 2) {
+                                try {
+                                    int score =
+                                            Integer.parseInt(
+                                                    scoreParts[0].trim()
+                                            );
+
+                                    int total =
+                                            Integer.parseInt(
+                                                    scoreParts[1].trim()
+                                            );
+
+                                    names.add(username);
+                                    scores.add(score);
+                                    totals.add(total);
+
+                                } catch (NumberFormatException e) {
+                                    System.out.println(
+                                            margin()
+                                                    + "  >> One invalid result was skipped."
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            fileScanner.close();
+
+        } catch (IOException e) {
+            System.out.println();
+
+            System.out.println(
+                    margin()
+                            + "  >> Error reading the results file."
+            );
+
+            return;
+        }
+
+        if (names.isEmpty()) {
+            System.out.println();
+
+            System.out.println(
+                    margin()
+                            + "  >> There are no valid rankings yet."
+            );
+
+            return;
+        }
+
+        for (int i = 0;
+             i < scores.size() - 1;
+             i++) {
+
+            for (int j = i + 1;
+                 j < scores.size();
+                 j++) {
+
+                if (scores.get(j) > scores.get(i)) {
+                    int temporaryScore =
+                            scores.get(i);
+
+                    scores.set(
+                            i,
+                            scores.get(j)
+                    );
+
+                    scores.set(
+                            j,
+                            temporaryScore
+                    );
+
+                    int temporaryTotal =
+                            totals.get(i);
+
+                    totals.set(
+                            i,
+                            totals.get(j)
+                    );
+
+                    totals.set(
+                            j,
+                            temporaryTotal
+                    );
+
+                    String temporaryName =
+                            names.get(i);
+
+                    names.set(
+                            i,
+                            names.get(j)
+                    );
+
+                    names.set(
+                            j,
+                            temporaryName
+                    );
+                }
+            }
+        }
+
+        System.out.println();
+
+        System.out.println(
+                margin()
+                        + "       Rank     Username                 Score"
+        );
+
+        System.out.println(
+                margin()
+                        + "       ----------------------------------------"
+        );
+
+        for (int i = 0;
+             i < names.size();
+             i++) {
+
+            String rank =
+                    String.valueOf(i + 1);
+
+            String username =
+                    names.get(i);
+
+            String score =
+                    scores.get(i)
+                            + "/"
+                            + totals.get(i);
+
+            while (rank.length() < 9) {
+                rank += " ";
+            }
+
+            if (username.length() > 22) {
+                username =
+                        username.substring(0, 22);
+            }
+
+            while (username.length() < 25) {
+                username += " ";
+            }
+
+            System.out.println(
+                    margin()
+                            + "       "
+                            + rank
+                            + username
+                            + score
+            );
+        }
+
+        System.out.println();
+
+        System.out.println(
+                margin()
+                        + "+------------------------------------------------------+"
+        );
+    }
+
     static String readText(
             Scanner scanner,
             String prompt
@@ -435,7 +702,10 @@ public class Main {
     }
 
     static void clearScreen() {
-        for (int i = 0; i < 25; i++) {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+
+        for (int i = 0; i < 4; i++) {
             System.out.println();
         }
     }
@@ -446,7 +716,10 @@ public class Main {
         int amount =
                 (CONSOLE_WIDTH - UI_WIDTH - 2) / 2;
 
-        for (int i = 0; i < amount; i++) {
+        for (int i = 0;
+             i < amount;
+             i++) {
+
             spaces += " ";
         }
 
