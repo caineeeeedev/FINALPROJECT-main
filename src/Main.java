@@ -16,6 +16,8 @@ public class Main {
         QuizFileHandler fileHandler = new QuizFileHandler(QUESTIONS_FILE, RESULTS_FILE);
 
         Logo.print();
+        System.out.println("Press ENTER to continue...");
+        scanner.nextLine();
 
         boolean running = true;
 
@@ -35,12 +37,18 @@ public class Main {
             switch (choice) {
                 case "1":
                     addNewQuestion(fileHandler, scanner);
+                    System.out.println("Press ENTER to continue...");
+                    scanner.nextLine();
                     break;
                 case "2":
                     takeQuiz(fileHandler, scanner);
+                    System.out.println("Press ENTER to continue...");
+                    scanner.nextLine();
                     break;
                 case "3":
                     showRankings();
+                    System.out.println("Press ENTER to continue...");
+                    scanner.nextLine();
                     break;
                 case "4":
                     System.out.println("+------------------------------------------------------+");
@@ -52,6 +60,8 @@ public class Main {
                     break;
                 default:
                     System.out.println(">> Invalid choice. Please enter 1, 2, 3, or 4.");
+                    System.out.println("Press ENTER to continue...");
+                    scanner.nextLine();
             }
         }
     }

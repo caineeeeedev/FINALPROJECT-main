@@ -39,6 +39,8 @@ public class LoginSystemLogin {
                     return false;
                 default:
                     System.out.println(">> Invalid choice. Please enter 1, 2, or 3.");
+                    System.out.println("Press ENTER to continue...");
+                    scanner.nextLine();
             }
         }
     }
@@ -59,6 +61,8 @@ public class LoginSystemLogin {
 
         if (!validID(id)) {
             System.out.println(">> Invalid ID format. Use 2026-xxxxxxx.");
+            System.out.println("Press ENTER to continue...");
+            scanner.nextLine();
             return false;
         }
 
@@ -69,6 +73,8 @@ public class LoginSystemLogin {
 
         if (account == null || !account[2].equals(password)) {
             System.out.println(">> Incorrect ID number or password.");
+            System.out.println("Press ENTER to continue...");
+            scanner.nextLine();
             return false;
         }
 
@@ -81,6 +87,8 @@ public class LoginSystemLogin {
         System.out.println("Username : " + loggedInUsername);
         System.out.println("ID       : " + id);
         System.out.println("+------------------------------------------------------+");
+        System.out.println("Press ENTER to continue...");
+        scanner.nextLine();
 
         return true;
     }
@@ -101,11 +109,15 @@ public class LoginSystemLogin {
 
         if (!validID(id)) {
             System.out.println(">> Invalid ID format. Use 2026-xxxxxxx.");
+            System.out.println("Press ENTER to continue...");
+            scanner.nextLine();
             return;
         }
 
         if (findAccount(id) != null) {
             System.out.println(">> That ID number is already registered.");
+            System.out.println("Press ENTER to continue...");
+            scanner.nextLine();
             return;
         }
 
@@ -117,11 +129,15 @@ public class LoginSystemLogin {
 
         if (username.isEmpty() || password.isEmpty()) {
             System.out.println(">> All fields are required.");
+            System.out.println("Press ENTER to continue...");
+            scanner.nextLine();
             return;
         }
 
         if (username.contains("|") || password.contains("|")) {
             System.out.println(">> The | character is not allowed.");
+            System.out.println("Press ENTER to continue...");
+            scanner.nextLine();
             return;
         }
 
@@ -148,6 +164,9 @@ public class LoginSystemLogin {
         } catch (IOException e) {
             System.out.println(">> The account could not be saved.");
         }
+
+        System.out.println("Press ENTER to continue...");
+        scanner.nextLine();
     }
 
     static String[] findAccount(String id) {

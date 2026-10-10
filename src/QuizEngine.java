@@ -37,6 +37,11 @@ public class QuizEngine {
             } else {
                 System.out.println(">> INCORRECT! Correct answer: " + question.correctAnswer);
             }
+
+            if (i < questions.size() - 1) {
+                System.out.println("Press ENTER for the next question...");
+                scanner.nextLine();
+            }
         }
 
         return score;
