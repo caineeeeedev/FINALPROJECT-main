@@ -59,7 +59,7 @@ public class Main {
                     running = false;
                     break;
                 default:
-                    System.out.println(">> Invalid choice. Please enter 1, 2, 3, or 4.");
+                    System.out.println("Invalid choice. Please enter 1, 2, 3, or 4.");
                     System.out.println("Press ENTER to continue...");
                     scanner.nextLine();
             }
@@ -72,12 +72,12 @@ public class Main {
         try {
             questions = fileHandler.loadQuestions();
         } catch (IOException e) {
-            System.out.println(">> Could not read the questions file.");
+            System.out.println("Could not read the questions file.");
             return;
         }
 
         if (questions.isEmpty()) {
-            System.out.println(">> There are currently no questions.");
+            System.out.println("There are currently no questions.");
             return;
         }
 
@@ -95,9 +95,9 @@ public class Main {
 
         try {
             fileHandler.saveResult(username, score, questions.size());
-            System.out.println(">> Your result was saved successfully.");
+            System.out.println("Your result was saved successfully.");
         } catch (IOException e) {
-            System.out.println(">> Your result could not be saved.");
+            System.out.println("Your result could not be saved.");
         }
     }
 
@@ -124,7 +124,7 @@ public class Main {
                 break;
             }
 
-            System.out.println(">> Please enter only A, B, C, or D.");
+            System.out.println("Please enter only A, B, C, or D.");
         }
 
         String[] options = {optionA, optionB, optionC, optionD};
@@ -132,9 +132,9 @@ public class Main {
 
         try {
             fileHandler.addQuestion(newQuestion);
-            System.out.println(">> Question added successfully!");
+            System.out.println("Question added successfully!");
         } catch (IOException e) {
-            System.out.println(">> The question could not be saved.");
+            System.out.println("The question could not be saved.");
         }
     }
 
@@ -150,7 +150,7 @@ public class Main {
         System.out.println("+------------------------------------------------------+");
 
         if (!file.exists()) {
-            System.out.println(">> There are no saved results yet.");
+            System.out.println("There are no saved results yet.");
             return;
         }
 
@@ -180,7 +180,7 @@ public class Main {
                                     scores.add(score);
                                     totals.add(total);
                                 } catch (NumberFormatException e) {
-                                    System.out.println(">> One invalid result was skipped.");
+                                    System.out.println("One invalid result was skipped.");
                                 }
                             }
                         }
@@ -191,12 +191,12 @@ public class Main {
             fileScanner.close();
 
         } catch (IOException e) {
-            System.out.println(">> Error reading the results file.");
+            System.out.println("Error reading the results file.");
             return;
         }
 
         if (names.isEmpty()) {
-            System.out.println(">> There are no valid rankings yet.");
+            System.out.println("There are no valid rankings yet.");
             return;
         }
 
@@ -250,9 +250,9 @@ public class Main {
             String input = scanner.nextLine().trim();
 
             if (input.isEmpty()) {
-                System.out.println(">> This field cannot be empty.");
+                System.out.println("This field cannot be empty.");
             } else if (input.contains("|")) {
-                System.out.println(">> The | character is not allowed.");
+                System.out.println("The | character is not allowed.");
             } else {
                 return input;
             }

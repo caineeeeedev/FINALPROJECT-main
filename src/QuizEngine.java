@@ -33,9 +33,9 @@ public class QuizEngine {
 
             if (question.isCorrect(answer)) {
                 score++;
-                System.out.println(">> CORRECT!");
+                System.out.println("CORRECT!");
             } else {
-                System.out.println(">> INCORRECT! Correct answer: " + question.correctAnswer);
+                System.out.println("INCORRECT! Correct answer: " + question.correctAnswer);
             }
 
             if (i < questions.size() - 1) {
@@ -70,7 +70,7 @@ public class QuizEngine {
                 }
             }
 
-            System.out.println(">> Please enter only A, B, C, or D.");
+            System.out.println("Please enter only A, B, C, or D.");
         }
     }
 }

@@ -38,7 +38,7 @@ public class LoginSystemLogin {
                     System.out.println("Thank you for using QuitiQuiz.");
                     return false;
                 default:
-                    System.out.println(">> Invalid choice. Please enter 1, 2, or 3.");
+                    System.out.println("Invalid choice. Please enter 1, 2, or 3.");
                     System.out.println("Press ENTER to continue...");
                     scanner.nextLine();
             }
@@ -60,7 +60,7 @@ public class LoginSystemLogin {
         }
 
         if (!validID(id)) {
-            System.out.println(">> Invalid ID format. Use 2026-xxxxxxx.");
+            System.out.println("Invalid ID format. Use 2026-xxxxxxx.");
             System.out.println("Press ENTER to continue...");
             scanner.nextLine();
             return false;
@@ -72,7 +72,7 @@ public class LoginSystemLogin {
         String[] account = findAccount(id);
 
         if (account == null || !account[2].equals(password)) {
-            System.out.println(">> Incorrect ID number or password.");
+            System.out.println("Incorrect ID number or password.");
             System.out.println("Press ENTER to continue...");
             scanner.nextLine();
             return false;
@@ -108,14 +108,14 @@ public class LoginSystemLogin {
         }
 
         if (!validID(id)) {
-            System.out.println(">> Invalid ID format. Use 2026-xxxxxxx.");
+            System.out.println("Invalid ID format. Use 2026-xxxxxxx.");
             System.out.println("Press ENTER to continue...");
             scanner.nextLine();
             return;
         }
 
         if (findAccount(id) != null) {
-            System.out.println(">> That ID number is already registered.");
+            System.out.println("That ID number is already registered.");
             System.out.println("Press ENTER to continue...");
             scanner.nextLine();
             return;
@@ -128,14 +128,14 @@ public class LoginSystemLogin {
         String password = scanner.nextLine();
 
         if (username.isEmpty() || password.isEmpty()) {
-            System.out.println(">> All fields are required.");
+            System.out.println("All fields are required.");
             System.out.println("Press ENTER to continue...");
             scanner.nextLine();
             return;
         }
 
         if (username.contains("|") || password.contains("|")) {
-            System.out.println(">> The | character is not allowed.");
+            System.out.println("The | character is not allowed.");
             System.out.println("Press ENTER to continue...");
             scanner.nextLine();
             return;
@@ -162,7 +162,7 @@ public class LoginSystemLogin {
             System.out.println("+------------------------------------------------------+");
 
         } catch (IOException e) {
-            System.out.println(">> The account could not be saved.");
+            System.out.println("The account could not be saved.");
         }
 
         System.out.println("Press ENTER to continue...");
@@ -192,7 +192,7 @@ public class LoginSystemLogin {
             fileScanner.close();
 
         } catch (IOException e) {
-            System.out.println(">> Could not read the accounts file.");
+            System.out.println("Could not read the accounts file.");
         }
 
         return null;
