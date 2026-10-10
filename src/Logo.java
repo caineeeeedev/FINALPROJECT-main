@@ -24,10 +24,7 @@ public class Logo {
         System.out.println("                                         #### #    ####    #      ##   #       #### #    #####    #####   #######");
         System.out.println();
         System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
-        System.out.println("                                                                   Test your knowledge");
+        System.out.println("                                                                   QUIZ or QUIT");
     
-  
-
-
     }
 }
